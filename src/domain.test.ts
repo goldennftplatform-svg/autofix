@@ -25,6 +25,16 @@ describe('repair lifecycle and funding', () => {
     const s = next(seed(), 'provider-1', 'claim');
     expect(() => next(s, 'provider-1', 'claim')).toThrow(/no longer available/);
   });
+  it('notifies competing mechanics to remove a claimed request from their feed', () => {
+    const initial = seed();
+    const rival = initial.profiles.find(p => p.id === 'provider-2')!;
+    rival.approval = 'approved'; rival.service = 'either';
+    const s = next(initial, 'provider-1', 'claim');
+    expect(s.tickets.filter(t => t.status === 'open').some(t => t.id === 'AF-1048')).toBe(false);
+    expect(s.tickets.find(t => t.id === 'AF-1048')!.providerId).toBe('provider-1');
+    expect(s.notices.some(n => n.userId === 'provider-2' && n.message.startsWith('Request taken:'))).toBe(true);
+    expect(() => next(s, 'provider-2', 'claim')).toThrow(/no longer available/);
+  });
   it('requires both consent and funding, in either approval order', () => {
     let s = next(seed(), 'provider-1', 'claim');
     s = next(s, 'provider-1', 'estimate', { lines: estimate });

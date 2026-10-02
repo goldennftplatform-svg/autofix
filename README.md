@@ -38,7 +38,7 @@ npm run preview
 
 ## Connect production authentication and data
 
-1. Create a Supabase project and run `supabase/migrations/202610020001_autofix.sql` once in its SQL editor. Use a fresh project or review existing schema before applying. This creates tables, checked RPCs, RLS, private storage, and realtime notification publication.
+1. Create a Supabase project and run the SQL files in `supabase/migrations/` in filename order, once each, in its SQL editor. Existing projects that applied `202610020001_autofix.sql` should apply only the new `202610020002_provider_onboarding.sql` migration. These create tables, checked RPCs, RLS, private storage, simpler provider onboarding, and realtime feed-removal notifications.
 2. In **Authentication → Sign-in / Providers**, enable Google. Create a Google OAuth web client; its authorized redirect URI is `https://YOUR_PROJECT.supabase.co/auth/v1/callback`. Put the Google client ID and secret into Supabase, never this repository.
 3. Set Supabase **Site URL** to `https://goldennftplatform-svg.github.io/autofix/`. Add that URL and `http://localhost:5173/` to **Redirect URLs**. Enable email magic links if desired; configure SMTP for production email delivery.
 4. Copy `.env.example` to `.env` for local development. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` to the project URL and **publishable/anon** key. Never use the secret/service-role key in any `VITE_` variable.
@@ -68,7 +68,7 @@ For a custom domain or another static host, use build command `npm run build`, o
 
 ## End-to-end demo walkthrough
 
-1. Enter the provider workspace. Open **Front brakes making a grinding noise** and claim it.
+1. Enter the provider workspace. Open **Front brakes making a grinding noise** and claim it. It disappears from available work and you are taken to **My jobs**. Open the claimed job there to continue.
 2. Submit an itemized estimate with a total below the customer’s remaining funding.
 3. Switch to **Customer**, open that request, and approve the estimate.
 4. Switch to **Administrator**, open it, and authorize funding.
@@ -78,6 +78,14 @@ For a custom domain or another static host, use build command `npm run build`, o
 8. As **Administrator**, open the payment and record a disbursement reference. The provider then sees it as paid.
 
 To reset demo data, delete the `autofix-demo-v1` local-storage key in browser developer tools and reload. No real customer data should be entered into demo mode.
+
+### Mechanic onboarding
+
+Click **Join as a mechanic** on the home page. Three steps collect contact details, mobile/shop service preferences, and payment-term acceptance. Mobile mechanics do not need a shop address; independent providers can use their own name. Google profile information prefills name and email when configured. The form preserves progress in session storage and shows a review screen before submission.
+
+The live demo supports this flow too: submit sample information, follow the **Demo: review this application** link, approve it, then switch back to **Service provider**. The demo remembers the newly enrolled provider. Pending providers cannot claim work.
+
+Claiming never deletes customer history. A database transaction assigns the ticket once, removes it from open feeds, and notifies competing matching providers so their realtime subscriptions refresh. The assigned mechanic retains the ticket in **My jobs**; a 30-second refresh remains a fallback if realtime is disconnected.
 
 ## Program and payment policy
 

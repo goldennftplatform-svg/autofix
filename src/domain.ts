@@ -84,7 +84,9 @@ export function applyAction(previous: Workspace, actorId: string, action: Action
       case 'claim':
         require(actor.role === 'provider' && actor.approval === 'approved' && !!actor.termsAt && actor.termsVersion === TERMS_VERSION, 'Provider approval and payment-terms acceptance are required.');
         require(ticket.status === 'open' && ticket.providerId === null && matches(actor, ticket), 'This ticket is no longer available or outside your service area.');
-        ticket.providerId = actorId; ticket.status = 'claimed'; break;
+        ticket.providerId = actorId; ticket.status = 'claimed';
+        state.profiles.filter(p => p.id !== actorId && p.role === 'provider' && p.approval === 'approved' && matches(p, ticket)).forEach(p => notify(p.id, `Request taken: ${ticket.title}. Removed from available jobs.`));
+        break;
       case 'estimate':
         require(provider && ['claimed', 'estimated'].includes(ticket.status), 'Only the assigned provider can submit an estimate before work is authorized.');
         ticket.estimate = validLines(payload.lines); ticket.customerConsent = false; ticket.fundingAuthorized = false; ticket.status = 'estimated'; break;

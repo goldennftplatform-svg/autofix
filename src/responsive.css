@@ -1,36 +1,104 @@
-/* One centered frame at every breakpoint, with gutters independent of content. */
-html,
-body,
-#root {
-  width: 100%;
+/* Mobile-first page layout. Only the document scrolls during normal browsing. */
+html {
+  width: auto;
   min-width: 0;
-  min-height: 100%;
+  height: auto;
+  overflow-x: clip;
+  scrollbar-gutter: stable;
 }
 
-/* Center the headline itself across the page, not within a left-hand column. */
+body,
+#root {
+  display: block;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  height: auto;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+}
+
+/* An open dialog owns scrolling; never leave the page scrolling behind it. */
+html:has(dialog[open]) {
+  overflow-y: hidden;
+}
+
+.landing {
+  --page-gutter: 16px;
+  width: 100%;
+  max-width: none;
+}
+
+.landing-nav,
+.landing .landing-hero,
+.value-strip,
+.how-section,
+.provider-section,
+.mechanic-invite,
+.landing footer {
+  width: calc(100% - 2 * var(--page-gutter));
+  max-width: none;
+  margin-inline: auto;
+}
+
+.landing-nav {
+  padding: 18px 0;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.landing-nav .logo {
+  font-size: 27px;
+}
+
+.landing-nav .logo-mark {
+  width: 30px;
+  height: 30px;
+  margin-right: 7px;
+}
+
 .landing .landing-hero {
   position: relative;
   isolation: isolate;
+  display: grid;
   grid-template-columns: minmax(0, 1fr);
-  min-height: 520px;
+  min-height: 0;
+  margin-top: 12px;
 }
 
 .landing .hero-copy {
-  width: min(100%, 800px);
+  width: 100%;
+  max-width: 800px;
+  min-width: 0;
+  padding: 40px 22px;
   margin-inline: auto;
   text-align: center;
   z-index: 1;
 }
 
+.landing .hero-copy h1 {
+  font-size: clamp(42px, 8vw, 76px);
+  letter-spacing: -0.05em;
+}
+
 .landing .hero-copy > p {
-  max-width: 510px;
+  max-width: 520px;
   margin-inline: auto;
+  font-size: clamp(14px, 1.2vw, 17px);
 }
 
 .landing .hero-copy .eyebrow,
 .landing .hero-buttons,
 .landing .hero-trust {
   justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hero-copy .eyebrow {
+  font-size: clamp(7px, 1.6vw, 10px);
+  letter-spacing: 1px;
 }
 
 .landing .hero-image {
@@ -49,28 +117,9 @@ body,
   display: none;
 }
 
-.workspace-content .page-heading {
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 14px;
-}
-
-.page-heading .eyebrow {
-  justify-content: center;
-}
-
-.page-heading p {
-  max-width: 600px;
-  margin-inline: auto;
-}
-
 .mechanic-invite {
-  width: calc(100% - 2 * var(--page-gutter));
-  max-width: 1440px;
-  margin: 0 auto 20px;
-  padding: 18px 24px;
+  padding: 18px;
+  margin-bottom: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -97,85 +146,71 @@ body,
   color: #67775b;
 }
 
-.landing {
-  --page-gutter: clamp(16px, 3.5vw, 56px);
-  width: 100%;
+.value-strip {
+  justify-content: center;
+  flex-wrap: wrap;
+  text-align: center;
+  gap: 24px;
 }
 
-.landing-nav,
-.landing-hero,
-.landing footer {
-  width: calc(100% - 2 * var(--page-gutter));
-  max-width: 1440px;
+.section-heading {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.section-heading .eyebrow,
+.provider-section .eyebrow {
+  justify-content: center;
+}
+
+.steps-grid,
+.provider-section {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.provider-section > div:first-child {
+  text-align: center;
+}
+
+.provider-section p {
   margin-inline: auto;
 }
 
-.landing-nav {
+.landing footer {
   padding-inline: 0;
-}
-
-.landing-hero {
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-}
-
-.hero-copy {
-  min-width: 0;
-  padding: clamp(32px, 4.5vw, 72px);
-}
-
-.hero-copy h1 {
-  font-size: clamp(42px, 4.8vw, 74px);
-}
-
-.hero-buttons,
-.hero-trust {
   flex-wrap: wrap;
 }
 
-.value-strip,
-.how-section,
-.provider-section {
-  width: calc(100% - 2 * var(--page-gutter));
-  max-width: 1280px;
-  margin-inline: auto;
-}
-
-.landing footer {
-  padding-inline: 0;
-}
-
-/* Center the entire workspace, including navigation, on wide displays. */
+/* No fixed-width outer application frame and no empty desktop side gutters. */
 .app-shell {
+  display: block;
   width: 100%;
-  max-width: 1800px;
-  margin-inline: auto;
-  align-items: flex-start;
-  border-inline: 1px solid var(--line);
-}
-
-.sidebar {
-  position: sticky;
-  inset: 0 auto auto auto;
-  width: 240px;
-  height: 100dvh;
-  overflow-y: auto;
-  flex: 0 0 240px;
-  transform: none;
+  max-width: none;
+  min-height: 100dvh;
+  margin: 0;
+  border: 0;
+  overflow: visible;
 }
 
 .main-column {
-  width: 0;
+  --workspace-gutter: 18px;
+  width: 100%;
   min-width: 0;
-  flex: 1 1 0%;
-  margin-left: 0;
-  --workspace-gutter: clamp(24px, 2.6vw, 44px);
+  max-width: none;
+  height: auto;
+  margin: 0;
+  overflow: visible;
 }
 
 .workspace-content {
   width: 100%;
   max-width: none;
-  margin-inline: auto;
-  padding-inline: var(--workspace-gutter);
+  height: auto;
+  margin: 0;
+  padding: 24px var(--workspace-gutter) 0;
+  overflow: visible;
 }
 
 .topbar,
@@ -183,17 +218,43 @@ body,
   padding-inline: var(--workspace-gutter);
 }
 
-.work-layout {
-  grid-template-columns: minmax(0, 1fr) 260px;
-  gap: clamp(20px, 2vw, 30px);
+.workspace-content .page-heading {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 14px;
 }
 
+.page-heading .eyebrow {
+  justify-content: center;
+}
+
+.page-heading p {
+  max-width: 600px;
+  margin-inline: auto;
+}
+
+.work-layout,
 .ticket-list {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
 }
 
 .right-rail {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  align-items: start;
+}
+
+.stats-grid,
+.stats-grid.three {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.stats-grid.three > :last-child {
+  grid-column: 1 / -1;
 }
 
 .ticket-meta,
@@ -203,172 +264,152 @@ body,
   flex-wrap: wrap;
 }
 
-.stats-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: min(280px, 85vw);
+  height: 100dvh;
+  padding: 25px 18px 0;
+  overflow-y: auto;
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition: transform 0.2s;
 }
 
-@media (min-width: 1024px) {
-  .nav-overlay {
-    display: none;
+.sidebar.open {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.mobile-menu {
+  display: inline-flex;
+}
+
+.nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 29;
+  border: 0;
+  background: #172f2260;
+  backdrop-filter: blur(2px);
+}
+
+.signup-page {
+  min-height: 100dvh;
+  width: 100%;
+}
+
+.signup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 18px clamp(18px, 3vw, 48px);
+  border-bottom: 1px solid var(--line);
+  background: white;
+}
+
+.signup-main {
+  width: calc(100% - 32px);
+  max-width: 740px;
+  margin: 24px auto 48px;
+  padding: clamp(20px, 4vw, 40px);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: white;
+}
+
+@media (max-width: 1099px) {
+  html:has(.sidebar.open) {
+    overflow-y: hidden;
   }
 }
 
-@media (min-width: 701px) and (max-width: 1199px) {
-  .work-layout {
-    grid-template-columns: minmax(0, 1fr);
+@media (min-width: 701px) {
+  .landing {
+    --page-gutter: clamp(24px, 3vw, 56px);
   }
 
+  .landing-nav {
+    padding-block: 24px;
+  }
+
+  .landing .hero-copy {
+    padding: 64px 40px;
+  }
+
+  .steps-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .provider-section,
   .right-rail {
-    display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: start;
+  }
+
+  .main-column {
+    --workspace-gutter: clamp(24px, 2.5vw, 48px);
+  }
+
+  .ticket-list {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   }
 
   .support-note {
     grid-column: 1 / -1;
   }
-
-  .stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
-/* Give tablets their full canvas instead of reserving a desktop sidebar. */
-@media (max-width: 1023px) {
+@media (min-width: 1100px) {
   .app-shell {
-    border: 0;
+    display: flex;
+    align-items: flex-start;
   }
 
   .sidebar {
-    position: fixed;
-    inset: 0 auto 0 0;
-    width: min(280px, 85vw);
-    height: 100dvh;
-    transform: translateX(-100%);
-    transition: transform 0.2s;
-    padding: 25px 18px 0;
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  .mobile-menu {
-    display: inline-flex;
-  }
-
-  .nav-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 29;
-    border: 0;
-    background: #172f2260;
-    backdrop-filter: blur(2px);
-  }
-
-  .page-heading h1 {
-    font-size: clamp(25px, 3.2vw, 32px);
-  }
-}
-
-@media (max-width: 700px) {
-  .landing-hero {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .hero-copy {
-    padding: 36px 24px;
-    text-align: center;
-  }
-
-  .hero-copy .eyebrow,
-  .hero-buttons,
-  .hero-trust {
-    justify-content: center;
-  }
-
-  .hero-copy h1 {
-    font-size: clamp(42px, 10.5vw, 62px);
-    letter-spacing: -0.055em;
-  }
-
-  .hero-copy > p {
-    margin-inline: auto;
-  }
-
-  .hero-copy .eyebrow {
-    font-size: clamp(7px, 1.8vw, 9px);
-    letter-spacing: 0.8px;
-  }
-
-  .hero-buttons {
-    gap: 18px;
-  }
-
-  .hero-trust {
-    gap: 12px 18px;
-  }
-
-  .value-strip {
-    justify-content: center;
-    text-align: center;
-  }
-
-  .section-heading,
-  .provider-section > div:first-child {
-    text-align: center;
-  }
-
-  .section-heading {
-    justify-content: center;
-  }
-
-  .section-heading .eyebrow,
-  .provider-section .eyebrow {
-    justify-content: center;
-  }
-
-  .provider-section p {
-    margin-inline: auto;
+    position: sticky;
+    inset: 0 auto auto auto;
+    flex: 0 0 224px;
+    width: 224px;
+    height: auto;
+    min-height: 100dvh;
+    max-height: none;
+    overflow: visible;
+    transform: none;
+    visibility: visible;
   }
 
   .main-column {
-    --workspace-gutter: 18px;
+    flex: 1 1 0%;
+    width: 0;
   }
 
-  .stats-grid,
+  .mobile-menu,
+  .nav-overlay {
+    display: none;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
   .stats-grid.three {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .stats-grid.three > :last-child {
-    grid-column: 1 / -1;
+    grid-column: auto;
   }
+}
 
+@media (min-width: 1300px) {
   .work-layout {
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 28px;
+  }
+
+  .right-rail {
     grid-template-columns: minmax(0, 1fr);
-    gap: 16px;
-  }
-
-  .ticket-list {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .hero-image {
-    min-height: clamp(230px, 65vw, 350px);
-  }
-
-  .landing-nav {
-    gap: 10px;
-  }
-
-  .landing-nav .logo {
-    font-size: 26px;
-  }
-
-  .landing-nav .logo-mark {
-    width: 30px;
-    height: 30px;
-    margin-right: 7px;
   }
 }
